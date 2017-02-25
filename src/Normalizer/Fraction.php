@@ -25,7 +25,7 @@ class Fraction extends BaseNormalizer
             '1/2',
         ];
 
-        return $this->filterAndReIndex(array_map(function ($val) use ($fraction, $number) {
+        return array_map(function ($val) use ($fraction, $number) {
             // Add a space if necessary, "1¼" -> "1 ¼"
             $val = preg_replace(
                 sprintf('/(\d+)([%s])/u', implode('|', $fraction)),
@@ -37,6 +37,6 @@ class Fraction extends BaseNormalizer
             $val = str_replace($fraction, $number, $val);
 
             return trim($val);
-        }, (array) $value));
+        }, (array) $value);
     }
 }

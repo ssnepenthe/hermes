@@ -10,9 +10,4 @@ abstract class BaseNormalizer implements NormalizerInterface
     {
         return $this->normalize($value, $crawler);
     }
-
-    protected function filterAndReIndex(array $values)
-    {
-        return array_values(array_filter($values));
-    }
 }

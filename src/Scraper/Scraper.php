@@ -89,6 +89,8 @@ class Scraper implements ScraperInterface
             return $this->{$scrapeMethod}($c);
         });
 
+        $result = $this->filterAndReIndex($result);
+
         if (1 === count($result)) {
             $result = current($result);
         }
@@ -122,6 +124,8 @@ class Scraper implements ScraperInterface
         $data = $this->normalize($data, $crawler);
         $data = $this->convert($data, $crawler);
 
+        $data = $this->filterAndReIndex($data);
+
         if (1 === count($data) && ! is_array($first = current($data))) {
             $data = $first;
         }
@@ -138,6 +142,11 @@ class Scraper implements ScraperInterface
         }
 
         return $result;
+    }
+
+    protected function filterAndReIndex(array $values) : array
+    {
+        return array_vales(array_filter($values));
     }
 
     protected function normalize($value, Crawler $crawler)

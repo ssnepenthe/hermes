@@ -10,9 +10,4 @@ abstract class BaseConverter implements ConverterInterface
     {
         return $this->convert($value, $crawler);
     }
-
-    protected function filterAndReIndex(array $values)
-    {
-        return array_values(array_filter($values));
-    }
 }

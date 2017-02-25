@@ -10,7 +10,7 @@ class ToInterval extends BaseConverter
 {
     public function convert($value, Crawler $crawler = null) : array
     {
-        return $this->filterAndReIndex(array_map(function ($v) {
+        return array_map(function ($v) {
             try {
                 $interval = new DateInterval($v);
             } catch (Exception $e) {
@@ -25,6 +25,6 @@ class ToInterval extends BaseConverter
             }
 
             return $interval;
-        }, (array) $value));
+        }, (array) $value);
     }
 }

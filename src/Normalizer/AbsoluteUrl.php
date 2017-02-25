@@ -15,7 +15,7 @@ class AbsoluteUrl extends BaseNormalizer
     {
         $url = parse_url($crawler->getUri());
 
-        return $this->filterAndReIndex(array_map(function ($val) use ($url) {
+        return array_map(function ($val) use ($url) {
             $parsed = parse_url($val);
 
             // We probably shouldn't be here ($val is not URL).
@@ -33,7 +33,6 @@ class AbsoluteUrl extends BaseNormalizer
             }
 
             return trim($val);
-        }, (array) $value));
+        }, (array) $value);
     }
 }
-

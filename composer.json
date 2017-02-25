@@ -1,9 +1,11 @@
 {
   "name": "ssnepenthe/hermes",
+  "description": "A configuration base web scraper.",
   "type": "library",
   "require": {
     "php": ">=7.0",
     "symfony/config": "^3.2",
+    "symfony/css-selector": "^3.2",
     "symfony/dom-crawler": "^3.2",
     "symfony/yaml": "^3.2"
   },

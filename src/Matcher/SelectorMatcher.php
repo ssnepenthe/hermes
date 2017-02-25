@@ -6,6 +6,13 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class SelectorMatcher implements MatcherInterface
 {
+    protected $pattern;
+
+    public function __construct($pattern)
+    {
+        $this->pattern = $pattern;
+    }
+
     public static function getType() : string
     {
         return 'selector';

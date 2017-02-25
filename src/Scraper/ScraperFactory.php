@@ -153,7 +153,7 @@ class ScraperFactory
 
     protected static function makeConverter(array $converters)
     {
-        if (empty($converter)) {
+        if (empty($converters)) {
             return [function ($value) { return $value; }];
         }
 

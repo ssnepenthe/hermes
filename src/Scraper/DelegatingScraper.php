@@ -13,6 +13,11 @@ class DelegatingScraper implements ScraperInterface
         $this->resolver = $resolver;
     }
 
+    public function getName() : string
+    {
+        return 'delegating-scraper';
+    }
+
     public function getResolver() : ScraperResolverInterface
     {
         return $this->resolver;

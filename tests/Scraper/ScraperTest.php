@@ -17,29 +17,6 @@ class ScraperTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable()
-    {
-        $matcher = Mockery::mock(MatcherInterface::class);
-        $scraper = new Scraper([], $matcher, [], 'name');
-
-        $this->assertInstanceOf(ScraperInterface::class, $scraper);
-    }
-
-    /** @test */
-    function it_delegates_to_matcher_to_check_crawler_for_match()
-    {
-        $matcher = Mockery::mock(MatcherInterface::class)
-            ->shouldReceive('matches')
-            ->once()
-            ->andReturn(true)
-            ->mock();
-        $crawler = Mockery::mock(Crawler::class);
-        $scraper = new Scraper([], $matcher, [], 'name');
-
-        $this->assertTrue($scraper->matches($crawler));
-    }
-
-    /** @test */
     function it_uses_full_crawler_if_no_selector_provided()
     {
 
@@ -125,13 +102,6 @@ class ScraperTest extends PHPUnit\Framework\TestCase
         return $this->getTestDataFile($file);
     }
 
-    protected function getScrapersFile($url)
-    {
-        $file = 'scrapers' . DIRECTORY_SEPARATOR . $this->urlToFile($url) . '.php';
-
-        return $this->getTestDataFile($file);
-    }
-
     protected function getTestDataFile($file)
     {
         if (is_null($this->testDataPath)) {
@@ -154,13 +124,112 @@ class ScraperTest extends PHPUnit\Framework\TestCase
 
     protected function makeScraper($url)
     {
-        $file = $this->getScrapersFile($url);
-
-        if (! is_readable($file)) {
-            return false;
+        if (false !== strpos($url, 'chrome')) {
+            return $this->makeDdgChromeScraper();
         }
 
-        return ScraperFactory::fromConfigFile($file);
+        if (false !== strpos($url, 'firefox')) {
+            return $this->makeDdgFirefoxScraper();
+        }
+
+        if (false !== strpos($url, 'safari')) {
+            return $this->makeDdgSafariScraper();
+        }
+
+        throw new RuntimeException('Scraper not found...');
+    }
+
+    protected function makeDdgChromeScraper()
+    {
+        return new SSNepenthe\Hermes\Scraper\Root(
+            'ddg.gg',
+            new SSNepenthe\Hermes\Matcher\NullMatcher,
+            null,
+            [
+                new SSNepenthe\Hermes\Scraper\Leaf(
+                    'icon',
+                    new SSNepenthe\Hermes\Matcher\NullMatcher,
+                    new SSNepenthe\Hermes\Extractor\All('href'),
+                    new SSNepenthe\Hermes\Normalizer\NullNormalizer,
+                    new SSNepenthe\Hermes\Converter\NullConverter,
+                    '[rel="apple-touch-icon"]'
+                ),
+            ]
+        );
+    }
+
+    protected function makeDdgFirefoxScraper()
+    {
+        return new SSNepenthe\Hermes\Scraper\Root(
+            'ddg.gg',
+            new SSNepenthe\Hermes\Matcher\NullMatcher,
+            null,
+            [
+                new SSNepenthe\Hermes\Scraper\Branch(
+                    'results',
+                    new SSNepenthe\Hermes\Matcher\NullMatcher,
+                    '.web-result',
+                    [
+                        new SSNepenthe\Hermes\Scraper\Leaf(
+                            'title',
+                            new SSNepenthe\Hermes\Matcher\NullMatcher,
+                            new SSNepenthe\Hermes\Extractor\All('_text'),
+                            new SSNepenthe\Hermes\Normalizer\NormalizerStack([
+                                new SSNepenthe\Hermes\Normalizer\HorizontalSpace,
+                                new SSNepenthe\Hermes\Normalizer\VerticalSpace
+                            ]),
+                            new SSNepenthe\Hermes\Converter\NullConverter,
+                            '.result__title'
+                        ),
+                        new SSNepenthe\Hermes\Scraper\Leaf(
+                            'url',
+                            new SSNepenthe\Hermes\Matcher\NullMatcher,
+                            new SSNepenthe\Hermes\Extractor\All('href'),
+                            new SSNepenthe\Hermes\Normalizer\NullNormalizer,
+                            new SSNepenthe\Hermes\Converter\NullConverter,
+                            '.result__url'
+                        ),
+                        new SSNepenthe\Hermes\Scraper\Leaf(
+                            'description',
+                            new SSNepenthe\Hermes\Matcher\NullMatcher,
+                            new SSNepenthe\Hermes\Extractor\All('_text'),
+                            new SSNepenthe\Hermes\Normalizer\NullNormalizer,
+                            new SSNepenthe\Hermes\Converter\NullConverter,
+                            '.result__snippet'
+                        ),
+                    ]
+                ),
+            ]
+        );
+    }
+
+    protected function makeDdgSafariScraper()
+    {
+        return new SSNepenthe\Hermes\Scraper\Root(
+            'ddg.gg',
+            new SSNepenthe\Hermes\Matcher\NullMatcher,
+            null,
+            [
+                new SSNepenthe\Hermes\Scraper\Branch(
+                    'header',
+                    new SSNepenthe\Hermes\Matcher\NullMatcher,
+                    '.header__form',
+                    [
+                        new SSNepenthe\Hermes\Scraper\Leaf(
+                            'input',
+                            new SSNepenthe\Hermes\Matcher\NullMatcher,
+                            new SSNepenthe\Hermes\Extractor\All('value'),
+                            new SSNepenthe\Hermes\Normalizer\NormalizerStack([
+                                new SSNepenthe\Hermes\Normalizer\HorizontalSpace,
+                                new SSNepenthe\Hermes\Normalizer\VerticalSpace
+                            ]),
+                            new SSNepenthe\Hermes\Converter\NullConverter,
+                            '.search__input'
+                        ),
+                    ]
+                )
+            ]
+        );
     }
 
     protected function urlToFile($url)

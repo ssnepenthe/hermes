@@ -2,15 +2,13 @@
 
 namespace SSNepenthe\Hermes\Definition;
 
+use SSNepenthe\Hermes\Extractor\First;
 use SSNepenthe\Hermes\Converter\ConverterInterface;
 use SSNepenthe\Hermes\Normalizer\NormalizerInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
-/**
- * @todo Add extractor property.
- */
 class ScraperConfiguration implements ConfigurationInterface
 {
     /**
@@ -19,6 +17,13 @@ class ScraperConfiguration implements ConfigurationInterface
     protected $maxDepth = 5;
     protected $normalizers = [];
     protected $converters = [];
+    // @todo
+    protected $extractor;
+
+    public function __construct()
+    {
+        $this->extractor = new First('_text');
+    }
 
     public function getConfigTreeBuilder()
     {
@@ -96,6 +101,17 @@ class ScraperConfiguration implements ConfigurationInterface
                 ->scalarNode('attr')
                     ->cannotBeEmpty()
                     ->defaultValue('_text')
+                ->end()
+                ->variableNode('extractor')
+                    ->defaultValue($this->prepareCallable($this->extractor))
+                    ->beforeNormalization()
+                        ->always()
+                        ->then(function ($v) { return $this->prepareCallable($v); })
+                    ->end()
+                    ->validate()
+                        ->ifTrue(function ($v) { return ! is_callable($v); })
+                        ->thenInvalid('Invalid extractor %s')
+                    ->end()
                 ->end()
                 ->arrayNode('normalizers')
                     ->prototype('variable')->end()

@@ -101,7 +101,7 @@ class ScraperConfigurationTest extends PHPUnit\Framework\TestCase
 
     protected function getConfigs(string $file) : array
     {
-        $dir = realpath(dirname(__DIR__) . '/_data/scrapers');
+        $dir = realpath(dirname(__DIR__) . '/fixtures/scrapers');
         $file = $dir . DIRECTORY_SEPARATOR . $file;
         $config = include $file;
 

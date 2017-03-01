@@ -105,7 +105,7 @@ class ScraperTest extends PHPUnit\Framework\TestCase
     protected function getTestDataFile($file)
     {
         if (is_null($this->testDataPath)) {
-            $this->testDataPath = realpath(__DIR__ . '/../_data');
+            $this->testDataPath = realpath(__DIR__ . '/../fixtures');
         }
 
         return $this->testDataPath . DIRECTORY_SEPARATOR . $file;

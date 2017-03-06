@@ -9,8 +9,6 @@ class FirstFromChildren extends FromChildren
 {
     public function extract(Crawler $crawler)
     {
-        $result = $this->extractValueFromChildNodes($crawler->getNode(0));
-
-        return result_return_value($result);
+        return $this->extractValueFromChildNodes($crawler->getNode(0));
     }
 }

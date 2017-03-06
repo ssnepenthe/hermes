@@ -9,8 +9,8 @@ class AllFromChildren extends FromChildren
 {
     public function extract(Crawler $crawler)
     {
-        $result = $crawler->each(function (Crawler $c, int $i) {
-            return $this->extractValueFromChildNodes($c->getNode(0));
+        $result = $crawler->each(function (Crawler $subCrawler, int $index) {
+            return $this->extractValueFromChildNodes($subCrawler->getNode(0));
         });
 
         return result_return_value($result);

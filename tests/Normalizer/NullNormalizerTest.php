@@ -12,21 +12,20 @@ class NullNormalizerTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable_and_callable()
+    function it_is_instantiable()
     {
-        $n = new NullNormalizer;
+        $normalizer = new NullNormalizer;
 
-        $this->assertInstanceOf(NormalizerInterface::class, $n);
-        $this->assertTrue(is_callable($n));
+        $this->assertInstanceOf(NormalizerInterface::class, $normalizer);
     }
 
     /** @test */
     function it_returns_the_same_value_it_is_given_as_an_array()
     {
-        $n = new NullNormalizer;
-        $c = Mockery::mock(Crawler::class);
+        $normalizer = new NullNormalizer;
+        $crawler = Mockery::mock(Crawler::class);
 
-        $this->assertEquals(['value'], $n(['value'], $c));
-        $this->assertEquals(['value'], $n('value', $c));
+        $this->assertEquals(['value'], $normalizer->normalize(['value'], $crawler));
+        $this->assertEquals(['value'], $normalizer->normalize('value', $crawler));
     }
 }

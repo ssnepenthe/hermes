@@ -1,22 +1,18 @@
 <?php
 
 return [
-    'matchPattern' => 'duckduckgo.com',
     'schema' => [
         [
             'name' => 'results',
-            'selector' => '.result',
+            'selector' => '.web-result',
             'schema' => [
                 [
                     'name' => 'title',
                     'selector' => '.result__title',
-                    'normalizers' => [
-                        SSNepenthe\Hermes\Normalizer\ConsecutiveVerticalSpace::class,
-                        SSNepenthe\Hermes\Normalizer\ConsecutiveHorizontalSpace::class,
-                    ],
+                    'normalizers' => 'whitespace',
                 ],
                 [
-                    'attr' => 'href',
+                    'extractor' => 'first:href',
                     'name' => 'url',
                     'selector' => '.result__url',
                 ],

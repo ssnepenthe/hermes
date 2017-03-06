@@ -1,0 +1,9 @@
+{
+    "extends": "one-extension.json",
+    "schema": [
+        {
+            "extractor": "all:href",
+            "name": "icon"
+        }
+    ]
+}

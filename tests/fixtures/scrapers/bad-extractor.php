@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'matchPattern' => 'duckduckgo.com',
+    'matcher' => 'host:duckduckgo.com',
     'schema' => [
         [
-            'attr' => 'href',
+            'extractor' => 'bad-extractor:href',
             'name' => 'icon',
             'selector' => '[rel="apple-touch-icon"]',
         ],

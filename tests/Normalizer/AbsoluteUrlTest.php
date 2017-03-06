@@ -12,19 +12,18 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable_and_callable()
+    function it_is_instantiable()
     {
-        $n = new AbsoluteUrl;
+        $normalizer = new AbsoluteUrl;
 
-        $this->assertInstanceOf(NormalizerInterface::class, $n);
-        $this->assertTrue(is_callable($n));
+        $this->assertInstanceOf(NormalizerInterface::class, $normalizer);
     }
 
     /** @test */
     function it_bails_if_given_non_url()
     {
-        $n = new AbsoluteUrl;
-        $c = Mockery::mock(Crawler::class)
+        $normalizer = new AbsoluteUrl;
+        $crawler = Mockery::mock(Crawler::class)
             ->shouldReceive('getUri')
             ->andReturn('https://example.com')
             ->once()
@@ -32,15 +31,15 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['just a regular string'],
-            $n('just a regular string', $c)
+            $normalizer->normalize('just a regular string', $crawler)
         );
     }
 
     /** @test */
     function it_fixes_schemeless_urls()
     {
-        $n = new AbsoluteUrl;
-        $c = Mockery::mock(Crawler::class)
+        $normalizer = new AbsoluteUrl;
+        $crawler = Mockery::mock(Crawler::class)
             ->shouldReceive('getUri')
             ->andReturn('https://example.com')
             ->once()
@@ -48,15 +47,15 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['https://example.com/path/to/image.jpg'],
-            $n('//example.com/path/to/image.jpg', $c)
+            $normalizer->normalize('//example.com/path/to/image.jpg', $crawler)
         );
     }
 
     /** @test */
     function it_fixes_hostless_urls()
     {
-        $n = new AbsoluteUrl;
-        $c = Mockery::mock(Crawler::class)
+        $normalizer = new AbsoluteUrl;
+        $crawler = Mockery::mock(Crawler::class)
             ->shouldReceive('getUri')
             ->andReturn('https://example.com')
             ->once()
@@ -64,7 +63,7 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['https://example.com/path/to/image.jpg'],
-            $n('/path/to/image.jpg', $c)
+            $normalizer->normalize('/path/to/image.jpg', $crawler)
         );
     }
 }

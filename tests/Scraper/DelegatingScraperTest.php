@@ -25,16 +25,16 @@ class DelegatingScraperTest extends PHPUnit\Framework\TestCase
     function it_delegates_to_resolver_to_check_for_match()
     {
         $crawler = Mockery::mock(Crawler::class);
-        $s1 = Mockery::mock(ScraperInterface::class);
+        $scraper = Mockery::mock(ScraperInterface::class);
         $resolver = Mockery::mock(ScraperResolverInterface::class)
             ->shouldReceive('resolve')
             ->twice()
-            ->andReturn($s1, false)
+            ->andReturn($scraper, false)
             ->mock();
-        $scraper = new DelegatingScraper($resolver);
+        $delegatingScraper = new DelegatingScraper($resolver);
 
-        $this->assertTrue($scraper->matches($crawler));
-        $this->assertFalse($scraper->matches($crawler));
+        $this->assertTrue($delegatingScraper->matches($crawler));
+        $this->assertFalse($delegatingScraper->matches($crawler));
     }
 
     /** @test */
@@ -57,7 +57,7 @@ class DelegatingScraperTest extends PHPUnit\Framework\TestCase
     function it_delegates_to_scraper_to_scrape_crawler()
     {
         $crawler = Mockery::mock(Crawler::class);
-        $s1 = Mockery::mock(ScraperInterface::class)
+        $scraper = Mockery::mock(ScraperInterface::class)
             ->shouldReceive('scrape')
             ->once()
             ->andReturn(['scraped value'])
@@ -65,10 +65,10 @@ class DelegatingScraperTest extends PHPUnit\Framework\TestCase
         $resolver = Mockery::mock(ScraperResolverInterface::class)
             ->shouldReceive('resolve')
             ->once()
-            ->andReturn($s1)
+            ->andReturn($scraper)
             ->mock();
-        $scraper = new DelegatingScraper($resolver);
+        $delegatingScraper = new DelegatingScraper($resolver);
 
-        $this->assertEquals(['scraped value'], $scraper->scrape($crawler));
+        $this->assertEquals(['scraped value'], $delegatingScraper->scrape($crawler));
     }
 }

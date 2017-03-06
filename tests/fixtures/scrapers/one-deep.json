@@ -1,0 +1,10 @@
+{
+    "matcher": "host:duckduckgo.com",
+    "schema": [
+        {
+            "extractor": "first:href",
+            "name": "icon",
+            "selector": "[rel=\"apple-touch-icon\"]"
+        }
+    ]
+}

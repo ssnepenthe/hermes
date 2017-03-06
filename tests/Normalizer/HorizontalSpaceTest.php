@@ -12,22 +12,24 @@ class HorizontalSpaceTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable_and_callable()
+    function it_is_instantiable()
     {
-        $n = new HorizontalSpace;
+        $normalizer = new HorizontalSpace;
 
-        $this->assertInstanceOf(NormalizerInterface::class, $n);
-        $this->assertTrue(is_callable($n));
+        $this->assertInstanceOf(NormalizerInterface::class, $normalizer);
     }
 
     /** @test */
     function it_replaces_all_horizontal_space_characters_with_ordinary_space()
     {
-        $n = new HorizontalSpace;
+        $normalizer = new HorizontalSpace;
         // Only testing the basics, trust PCRE "\h" implementation for the rest.
-        $s = "space tab\tend";
-        $c = Mockery::mock(Crawler::class);
+        $string = "space tab\tend";
+        $crawler = Mockery::mock(Crawler::class);
 
-        $this->assertEquals(['space tab end'], $n($s, $c));
+        $this->assertEquals(
+            ['space tab end'],
+            $normalizer->normalize($string, $crawler)
+        );
     }
 }

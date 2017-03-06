@@ -12,25 +12,24 @@ class VerticalSpaceTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable_and_callable()
+    function it_is_instantiable()
     {
-        $n = new VerticalSpace;
+        $normalizer = new VerticalSpace;
 
-        $this->assertInstanceOf(NormalizerInterface::class, $n);
-        $this->assertTrue(is_callable($n));
+        $this->assertInstanceOf(NormalizerInterface::class, $normalizer);
     }
 
     /** @test */
     function it_replaces_all_vertical_space_characters_with_php_eol()
     {
-        $n = new VerticalSpace;
+        $normalizer = new VerticalSpace;
         // Only testing the basics, trust PCRE "\h" implementation for the rest.
-        $s = "one\r\ntwo\rthree\nend";
-        $c = Mockery::mock(Crawler::class);
+        $string = "one\r\ntwo\rthree\nend";
+        $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             [sprintf('one%1$stwo%1$sthree%1$send', PHP_EOL)],
-            $n($s, $c)
+            $normalizer->normalize($string, $crawler)
         );
     }
 }

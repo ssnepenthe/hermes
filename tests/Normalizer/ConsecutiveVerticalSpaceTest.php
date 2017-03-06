@@ -12,31 +12,33 @@ class ConsecutiveVerticalSpaceTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_is_instantiable_and_callable()
+    function it_is_instantiable()
     {
-        $n = new ConsecutiveVerticalSpace;
+        $normalizer = new ConsecutiveVerticalSpace;
 
-        $this->assertInstanceOf(NormalizerInterface::class, $n);
-        $this->assertTrue(is_callable($n));
+        $this->assertInstanceOf(NormalizerInterface::class, $normalizer);
     }
 
     /** @test */
     function it_reduces_multiple_vertical_spaces_to_single_space()
     {
-        $n = new ConsecutiveVerticalSpace;
-        $s = "one\ntwo\n\nthree\n\n\nfour\n\n\n\nfive\n\n\n\n\nend";
-        $c = Mockery::mock(Crawler::class);
+        $normalizer = new ConsecutiveVerticalSpace;
+        $string = "one\ntwo\n\nthree\n\n\nfour\n\n\n\nfive\n\n\n\n\nend";
+        $crawler = Mockery::mock(Crawler::class);
 
-        $this->assertEquals(["one\ntwo\nthree\nfour\nfive\nend"], $n($s, $c));
+        $this->assertEquals(
+            ["one\ntwo\nthree\nfour\nfive\nend"],
+            $normalizer->normalize($string, $crawler)
+        );
     }
 
     /** @test */
-    function it_disregards_multiple_horizontal_spaces()
+    function it_disregards_horizontal_spaces()
     {
-        $n = new ConsecutiveVerticalSpace;
-        $s = "one two  three   four    five     end";
-        $c = Mockery::mock(Crawler::class);
+        $normalizer = new ConsecutiveVerticalSpace;
+        $string = "one two  three   four    five     end";
+        $crawler = Mockery::mock(Crawler::class);
 
-        $this->assertEquals([$s], $n($s, $c));
+        $this->assertEquals([$string], $normalizer->normalize($string, $crawler));
     }
 }

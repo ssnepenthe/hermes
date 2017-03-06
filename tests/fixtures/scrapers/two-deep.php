@@ -1,14 +1,13 @@
 <?php
 
 return [
-    'matchPattern' => 'duckduckgo.com',
     'schema' => [
         [
             'name' => 'header',
             'selector' => '.header__form',
             'schema' => [
                 [
-                    'attr' => 'value',
+                    'extractor' => 'first:value',
                     'name' => 'input',
                     'selector' => '.search__input',
                 ],

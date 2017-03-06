@@ -1,0 +1,4 @@
+{
+    "extends": "one-deep.json",
+    "matcher": "host:google.com"
+}

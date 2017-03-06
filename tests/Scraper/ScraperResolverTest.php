@@ -142,7 +142,7 @@ class ScraperResolverTest extends PHPUnit\Framework\TestCase
     /** @test */
     function it_returns_false_if_no_matching_scraper_found()
     {
-        // @todo Should this return false or throw?
+        // @todo Should this return false, null or throw?
         $crawler = Mockery::mock(Crawler::class);
         $matcher = Mockery::mock(MatcherInterface::class)
             ->shouldReceive(['getType' => 'url'])

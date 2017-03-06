@@ -20,5 +20,8 @@
   "autoload": {
     "files": ["inc/functions.php"],
     "psr-4": { "SSNepenthe\\Hermes\\": "src/" }
+  },
+  "autoload-dev": {
+    "classmap": ["tests/ScraperTestCase.php"]
   }
 }

@@ -2,8 +2,12 @@
 
 namespace SSNepenthe\Hermes\Definition;
 
-use SSNepenthe\Hermes\Extractor\First;
+use Closure;
+use SSNepenthe\Hermes\Converter\ConverterStack;
+use SSNepenthe\Hermes\Matcher\MatcherInterface;
+use SSNepenthe\Hermes\Normalizer\NormalizerStack;
 use SSNepenthe\Hermes\Converter\ConverterInterface;
+use SSNepenthe\Hermes\Extractor\ExtractorInterface;
 use SSNepenthe\Hermes\Normalizer\NormalizerInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -11,18 +15,64 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
 class ScraperConfiguration implements ConfigurationInterface
 {
-    /**
-     * Arbitrary default.
-     */
-    protected $maxDepth = 5;
-    protected $normalizers = [];
-    protected $converters = [];
-    // @todo
-    protected $extractor;
+    protected $aliases = [
+        'converter' => [
+            'to-interval' => \SSNepenthe\Hermes\Converter\ToInterval::class,
+            'null' => \SSNepenthe\Hermes\Converter\NullConverter::class,
+        ],
+        'extractor' => [
+            'all' => \SSNepenthe\Hermes\Extractor\All::class,
+            'all-from-children' => \SSNepenthe\Hermes\Extractor\AllFromChildren::class,
+            'first' => \SSNepenthe\Hermes\Extractor\First::class,
+            'first-from-children' => \SSNepenthe\Hermes\Extractor\FirstFromChildren::class,
+        ],
+        'matcher' => [
+            'document' => \SSNepenthe\Hermes\Matcher\DocumentMatcher::class,
+            'host' => \SSNepenthe\Hermes\Matcher\HostMatcher::class,
+            'null' => \SSNepenthe\Hermes\Matcher\NullMatcher::class,
+            'selector' => \SSNepenthe\Hermes\Matcher\SelectorMatcher::class,
+            'title' => \SSNepenthe\Hermes\Matcher\TitleMatcher::class,
+            'url' => \SSNepenthe\Hermes\Matcher\UrlMatcher::class,
+        ],
+        'normalizer' => [
+            'absolute-url' => \SSNepenthe\Hermes\Normalizer\AbsoluteUrl::class,
+            'fraction' => \SSNepenthe\Hermes\Normalizer\Fraction::class,
+            'horizontal-space' => \SSNepenthe\Hermes\Normalizer\HorizontalSpace::class,
+            'consecutive-horizontal-space' => \SSNepenthe\Hermes\Normalizer\ConsecutiveHorizontalSpace::class,
+            'consecutive-vertical-space' => \SSNepenthe\Hermes\Normalizer\ConsecutiveVerticalSpace::class,
+            'null' => \SSNepenthe\Hermes\Normalizer\NullNormalizer::class,
+            'whitespace' => \SSNepenthe\Hermes\Normalizer\Whitespace::class,
+            'vertical-space' => \SSNepenthe\Hermes\Normalizer\VerticalSpace::class,
+        ],
+    ];
+    protected $cached = [];
+    protected $defaultConverter;
+    protected $maxDepth;
+    protected $defaultExtractor;
+    protected $defaultMatcher;
+    protected $defaultNormalizer;
 
-    public function __construct()
-    {
-        $this->extractor = new First('_text');
+    public function __construct(
+        int $maxDepth = 5,
+        ConverterInterface $defaultConverter = null,
+        ExtractorInterface $defaultExtractor = null,
+        MatcherInterface $defaultMatcher = null,
+        NormalizerInterface $defaultNormalizer = null
+    ) {
+        $this->maxDepth = max(1, $maxDepth);
+        $this->defaultConverter = $defaultConverter ?: $this->resolve(
+            'null',
+            'converter'
+        );
+        $this->defaultExtractor = $defaultExtractor ?: $this->resolve(
+            'first:_text',
+            'extractor'
+        );
+        $this->defaultMatcher = $defaultMatcher ?: $this->resolve('null', 'matcher');
+        $this->defaultNormalizer = $defaultNormalizer ?: $this->resolve(
+            'null',
+            'normalizer'
+        );
     }
 
     public function getConfigTreeBuilder()
@@ -30,53 +80,37 @@ class ScraperConfiguration implements ConfigurationInterface
         $builder = new TreeBuilder;
         $node = $builder->root('scraper');
 
-        $node->children()
-            ->enumNode('matchType')
-                ->defaultValue('host')
-                ->values([
-                    'host',
-                    'url',
-                    'title',
-                    'document',
-                    'selector',
-                ])
-            ->end()
-            ->scalarNode('matchPattern')
-                ->cannotBeEmpty()
-                ->isRequired()
-            ->end()
-        ->end();
-
+        $this->addMatcherNode($node);
         $this->addSchemaNode($node);
 
         return $builder;
     }
 
-    public function setDefaultConverters(array $converters)
+    protected function addMatcherNode(ArrayNodeDefinition $node)
     {
-        $this->converters = [];
-
-        foreach ($converters as $converter) {
-            $this->addDefaultConverter($this->prepareCallable($converter));
-        }
+        $node->children()
+            ->variableNode('matcher')
+                ->defaultValue($this->defaultMatcher)
+                ->beforeNormalization()
+                    ->always()
+                    ->then(function ($value) {
+                        return $this->resolve($value, 'matcher');
+                    })
+                ->end()
+                ->validate()
+                    ->ifTrue(function ($value) {
+                        return ! $value instanceof MatcherInterface;
+                    })
+                    ->thenInvalid('Invalid matcher %s')
+                ->end()
+            ->end()
+        ->end();
     }
 
-    public function setDefaultNormalizers(array $normalizers)
-    {
-        $this->normalizers = [];
-
-        foreach ($normalizers as $normalizer) {
-            $this->addDefaultNormalizer($this->prepareCallable($normalizer));
-        }
-    }
-
-    public function setMaxDepth(int $depth)
-    {
-        $this->maxDepth = $depth;
-    }
-
-    protected function addSchemaNode(ArrayNodeDefinition $rootNode, int $currentDepth = 0)
-    {
+    protected function addSchemaNode(
+        ArrayNodeDefinition $rootNode,
+        int $currentDepth = 0
+    ) {
         $currentDepth += 1;
 
         $schemaNode = $rootNode->children()
@@ -92,119 +126,146 @@ class ScraperConfiguration implements ConfigurationInterface
             ->useAttributeAsKey('name')
             ->prototype('array');
 
+        $this->addMatcherNode($schemaNode);
+
         if ($currentDepth < $this->maxDepth) {
             $this->addSchemaNode($schemaNode, $currentDepth);
         }
 
         $schemaNode
             ->children()
-                ->scalarNode('attr')
-                    ->cannotBeEmpty()
-                    ->defaultValue('_text')
-                ->end()
-                ->variableNode('extractor')
-                    ->defaultValue($this->prepareCallable($this->extractor))
+                ->variableNode('converters')
+                    ->defaultValue($this->defaultConverter)
                     ->beforeNormalization()
                         ->always()
-                        ->then(function ($v) { return $this->prepareCallable($v); })
+                        ->then(function ($values) {
+                            $normalized = array_map(function ($value) {
+                                return $this->resolve($value, 'converter');
+                            }, (array) $values);
+
+                            if (empty($normalized)) {
+                                return $this->defaultConverter;
+                            }
+
+                            if (1 === count($normalized)) {
+                                return reset($normalized);
+                            }
+
+                            return new ConverterStack($normalized);
+                        })
                     ->end()
                     ->validate()
-                        ->ifTrue(function ($v) { return ! is_callable($v); })
+                        ->ifTrue(function ($value) {
+                            return ! $value instanceof ConverterInterface;
+                        })
+                        ->thenInvalid('Invalid converter %s')
+                    ->end()
+                ->end()
+                ->variableNode('extractor')
+                    ->defaultValue($this->defaultExtractor)
+                    ->beforeNormalization()
+                        ->always()
+                        ->then(function ($value) {
+                            return $this->resolve($value, 'extractor');
+                        })
+                    ->end()
+                    ->validate()
+                        ->ifTrue(function ($value) {
+                            return ! $value instanceof ExtractorInterface;
+                        })
                         ->thenInvalid('Invalid extractor %s')
                     ->end()
                 ->end()
-                ->arrayNode('normalizers')
-                    ->prototype('variable')->end()
-                    ->defaultValue($this->normalizers)
+                ->variableNode('normalizers')
+                    ->defaultValue($this->defaultNormalizer)
                     ->beforeNormalization()
                         ->always()
-                        ->then(function ($v) {
-                            $normalized = $this->normalizers;
+                        ->then(function ($values) {
+                            $normalized = array_map(function ($value) {
+                                return $this->resolve($value, 'normalizer');
+                            }, (array) $values);
 
-                            foreach ((array) $v as $value) {
-                                $normalized[] = $this->prepareCallable($value);
+                            if (empty($normalized)) {
+                                return $this->defaultNormalizer;
                             }
 
-                            return $normalized;
+                            if (1 === count($normalized)) {
+                                return reset($normalized);
+                            }
+
+                            return new NormalizerStack($normalized);
                         })
                     ->end()
                     ->validate()
-                        ->ifTrue(function ($v) {
-                            $nonCallables = array_filter(array_map(function ($val) {
-                                return ! is_callable($val);
-                            }, $v));
-
-                            return ! empty($nonCallables);
+                        ->ifTrue(function ($value) {
+                            return ! $value instanceof NormalizerInterface;
                         })
-                        // @todo
                         ->thenInvalid('Invalid normalizer %s')
                     ->end()
                 ->end()
                 ->scalarNode('selector')
                     ->defaultValue('')
                 ->end()
-                ->arrayNode('converters')
-                    ->prototype('variable')->end()
-                    ->defaultValue($this->converters)
-                    ->beforeNormalization()
-                        ->always()
-                        ->then(function ($v) {
-                            $normalized = $this->converters;
-
-                            foreach ((array) $v as $value) {
-                                $normalized[] = $this->prepareCallable($value);
-                            }
-
-                            return $normalized;
-                        })
-                    ->end()
-                    ->validate()
-                        ->ifTrue(function ($v) {
-                            $nonCallables = array_filter(array_map(function ($val) {
-                                return ! is_callable($val);
-                            }, $v));
-
-                            return ! empty($nonCallables);
-                        })
-                        // @todo
-                        ->thenInvalid('Invalid converter %s')
-                    ->end()
-                ->end()
             ->end();
     }
 
-    protected function addDefaultConverter(callable $converter)
+    // @todo Such nesting...
+    protected function resolve($value, $type)
     {
-        $this->converters[] = $converter;
-    }
-
-    protected function addDefaultNormalizer(callable $normalizer)
-    {
-        $this->normalizers[] = $normalizer;
-    }
-
-    protected function prepareCallable($callable)
-    {
-        if (is_callable($callable)) {
-            return $callable;
+        if (! isset($this->aliases[$type])) {
+            return $value;
         }
 
-        if (is_string($callable)) {
-            if (class_exists($callable) && method_exists($callable, '__invoke')) {
-                return new $callable;
-            }
+        $ucfirst = ucfirst($type);
 
-            if (2 === count($parts = explode('@', $callable))) {
-                list($class, $method) = $parts;
+        if ($value instanceof Closure) {
+            $wrapper = sprintf('SSNepenthe\\Hermes\\%1$s\\Closure%1$s', $ucfirst);
 
-                if (class_exists($class) && method_exists($class, $method)) {
-                    return [new $class, $method];
+            return new $wrapper($value);
+        }
+
+        if (is_string($value)) {
+            $colonPos = strpos($value, ':');
+            $interface = sprintf(
+                'SSNepenthe\\Hermes\\%1$s\\%1$sInterface',
+                $ucfirst
+            );
+
+            if (false === $colonPos) {
+                $classname = $this->aliases[$type][$value] ?? $value;
+
+                if (isset($this->cached[$classname])) {
+                    return $this->cached[$classname];
+                }
+
+                $implements = class_exists($classname)
+                    ? class_implements($classname)
+                    : [];
+
+                if (isset($implements[$interface])) {
+                    return $this->cached[$classname] = new $classname;
+                }
+            } else {
+                $alias = substr($value, 0, $colonPos);
+                $params = substr($value, $colonPos + 1);
+                $classname = $this->aliases[$type][$alias] ?? $alias;
+                $key = $classname . ':' . $params;
+
+                if (isset($this->cached[$key])) {
+                    return $this->cached[$key];
+                }
+
+                $implements = class_exists($classname)
+                    ? class_implements($classname)
+                    : [];
+
+                if (isset($implements[$interface])) {
+                    return $this->cached[$key] = new $classname($params);
                 }
             }
         }
 
-        // No identifiable callable in the given value - return as-is and let the
-        // validation portion of our config definition throw as needed.
-        return $callable;
+        // Otherwise just return as provided - validation will sort it out later.
+        return $value;
     }
 }

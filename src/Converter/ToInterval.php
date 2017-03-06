@@ -6,9 +6,9 @@ use Exception;
 use DateInterval;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ToInterval extends BaseConverter
+class ToInterval implements ConverterInterface
 {
-    public function convert($value, Crawler $crawler = null) : array
+    public function convert($value, Crawler $crawler) : array
     {
         return array_map(function ($v) {
             try {

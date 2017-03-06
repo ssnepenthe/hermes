@@ -6,5 +6,5 @@ use Symfony\Component\DomCrawler\Crawler;
 
 interface ConverterInterface
 {
-    public function convert($value, Crawler $crawler = null) : array;
+    public function convert($value, Crawler $crawler) : array;
 }

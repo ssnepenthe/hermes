@@ -46,7 +46,7 @@ class Root implements ScraperInterface
 
     public function scrape(Crawler $crawler)
     {
-        if (! is_null($this->selector)) {
+        if ($this->selector) {
             $crawler = $crawler->filter($this->selector);
         }
 

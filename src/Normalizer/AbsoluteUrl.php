@@ -4,7 +4,7 @@ namespace SSNepenthe\Hermes\Normalizer;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-class AbsoluteUrl extends BaseNormalizer
+class AbsoluteUrl implements NormalizerInterface
 {
     /**
      * Far from perfect...

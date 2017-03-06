@@ -4,7 +4,7 @@ namespace SSNepenthe\Hermes\Normalizer;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-class ConsecutiveVerticalSpace extends BaseNormalizer
+class ConsecutiveVerticalSpace implements NormalizerInterface
 {
     public function normalize($value, Crawler $crawler) : array
     {

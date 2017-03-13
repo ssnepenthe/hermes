@@ -54,4 +54,16 @@ class ToIntervalTest extends PHPUnit\Framework\TestCase
             $converter->convert(['not interval'], $crawler)
         );
     }
+
+    /** @test */
+    function it_recalculates_carry_over()
+    {
+        $converter = new ToInterval;
+        $crawler = Mockery::mock(Crawler::class);
+
+        $this->assertEquals(
+            [new DateInterval('PT2H30M')],
+            $converter->convert(['PT150M'], $crawler)
+        );
+    }
 }

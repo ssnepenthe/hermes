@@ -31,7 +31,7 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['just a regular string'],
-            $normalizer->normalize('just a regular string', $crawler)
+            $normalizer->normalize(['just a regular string'], $crawler)
         );
     }
 
@@ -47,7 +47,7 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['https://example.com/path/to/image.jpg'],
-            $normalizer->normalize('//example.com/path/to/image.jpg', $crawler)
+            $normalizer->normalize(['//example.com/path/to/image.jpg'], $crawler)
         );
     }
 
@@ -63,7 +63,7 @@ class AbsoluteUrlTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['https://example.com/path/to/image.jpg'],
-            $normalizer->normalize('/path/to/image.jpg', $crawler)
+            $normalizer->normalize(['/path/to/image.jpg'], $crawler)
         );
     }
 }

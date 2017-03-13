@@ -4,13 +4,11 @@ namespace SSNepenthe\Hermes\Normalizer;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-class ConsecutiveHorizontalSpace implements NormalizerInterface
+class ConsecutiveHorizontalSpace extends BaseNormalizer
 {
-    public function normalize($value, Crawler $crawler) : array
+    protected function doNormalize(string $value, Crawler $crawler) : string
     {
-        return array_map(function ($val) {
-            return trim(preg_replace('/\h{2,}/u', ' ', $val));
-        }, (array) $value);
+        return preg_replace('/\h{2,}/u', ' ', $value);
     }
 }
 

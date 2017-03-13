@@ -38,7 +38,7 @@ class ConverterStackTest extends PHPUnit\Framework\TestCase
             ->andReturnUsing(function ($values) {
                 return array_map(function ($value) {
                     return $value . ' 1';
-                }, (array) $values);
+                }, $values);
             })
             ->mock();
         $c2 = Mockery::mock(ConverterInterface::class)
@@ -47,7 +47,7 @@ class ConverterStackTest extends PHPUnit\Framework\TestCase
             ->andReturnUsing(function ($values) {
                 return array_map(function ($value) {
                     return $value . ' 2';
-                }, (array) $values);
+                }, $values);
             })
             ->mock();
         $crawler = Mockery::mock(Crawler::class);
@@ -55,7 +55,7 @@ class ConverterStackTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['Converted 1 2'],
-            $converter->convert('Converted', $crawler)
+            $converter->convert(['Converted'], $crawler)
         );
     }
 }

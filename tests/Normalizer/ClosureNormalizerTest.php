@@ -22,14 +22,16 @@ class ClosureNormalizerTest extends PHPUnit\Framework\TestCase
     /** @test */
     function it_delegates_to_the_passed_closure_to_perform_normalization()
     {
-        $normalizer = new ClosureNormalizer(function ($v, $c) {
-            return $v . 'z';
+        $normalizer = new ClosureNormalizer(function ($values) {
+            return array_map(function ($value) {
+                return $value . 'z';
+            }, $values);
         });
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             ['just a regular stringz'],
-            $normalizer->normalize('just a regular string', $crawler)
+            $normalizer->normalize(['just a regular string'], $crawler)
         );
     }
 }

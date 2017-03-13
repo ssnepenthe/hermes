@@ -20,15 +20,15 @@ class ConverterStack implements ConverterInterface
         $this->stack[] = $converter;
     }
 
-    public function convert($value, Crawler $crawler) : array
+    public function convert(array $values, Crawler $crawler) : array
     {
-        $newValue = $value;
+        $newValues = $values;
 
         foreach ($this->stack as $converter) {
-            $newValue = $converter->convert($newValue, $crawler);
+            $newValues = $converter->convert($newValues, $crawler);
         }
 
-        return $newValue;
+        return $newValues;
     }
 
     public function getConverters() : array

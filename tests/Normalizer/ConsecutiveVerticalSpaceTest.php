@@ -23,12 +23,12 @@ class ConsecutiveVerticalSpaceTest extends PHPUnit\Framework\TestCase
     function it_reduces_multiple_vertical_spaces_to_single_space()
     {
         $normalizer = new ConsecutiveVerticalSpace;
-        $string = "one\ntwo\n\nthree\n\n\nfour\n\n\n\nfive\n\n\n\n\nend";
+        $strings = ["one\ntwo\n\nthree\n\n\nfour\n\n\n\nfive\n\n\n\n\nend"];
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             ["one\ntwo\nthree\nfour\nfive\nend"],
-            $normalizer->normalize($string, $crawler)
+            $normalizer->normalize($strings, $crawler)
         );
     }
 
@@ -36,9 +36,9 @@ class ConsecutiveVerticalSpaceTest extends PHPUnit\Framework\TestCase
     function it_disregards_horizontal_spaces()
     {
         $normalizer = new ConsecutiveVerticalSpace;
-        $string = "one two  three   four    five     end";
+        $strings = ["one two  three   four    five     end"];
         $crawler = Mockery::mock(Crawler::class);
 
-        $this->assertEquals([$string], $normalizer->normalize($string, $crawler));
+        $this->assertEquals($strings, $normalizer->normalize($strings, $crawler));
     }
 }

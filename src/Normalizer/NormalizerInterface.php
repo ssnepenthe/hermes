@@ -6,5 +6,5 @@ use Symfony\Component\DomCrawler\Crawler;
 
 interface NormalizerInterface
 {
-    public function normalize($value, Crawler $crawler) : array;
+    public function normalize(array $values, Crawler $crawler) : array;
 }

@@ -39,7 +39,7 @@ class NormalizerStackTest extends PHPUnit\Framework\TestCase
             ->andReturnUsing(function ($values) {
                 return array_map(function ($value) {
                     return $value . ' 1';
-                }, (array) $values);
+                }, $values);
             })
             ->mock();
         $n2 = Mockery::mock(NormalizerInterface::class)
@@ -48,7 +48,7 @@ class NormalizerStackTest extends PHPUnit\Framework\TestCase
             ->andReturnUsing(function ($values) {
                 return array_map(function ($value) {
                     return $value . ' 2';
-                }, (array) $values);
+                }, $values);
             })
             ->mock();
         $crawler = Mockery::mock(Crawler::class);
@@ -56,7 +56,7 @@ class NormalizerStackTest extends PHPUnit\Framework\TestCase
 
         $this->assertEquals(
             ['normalized 1 2'],
-            $normalizer->normalize('normalized', $crawler)
+            $normalizer->normalize(['normalized'], $crawler)
         );
     }
 }

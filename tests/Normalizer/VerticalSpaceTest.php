@@ -24,12 +24,12 @@ class VerticalSpaceTest extends PHPUnit\Framework\TestCase
     {
         $normalizer = new VerticalSpace;
         // Only testing the basics, trust PCRE "\h" implementation for the rest.
-        $string = "one\r\ntwo\rthree\nend";
+        $strings = ["one\r\ntwo\rthree\nend"];
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             [sprintf('one%1$stwo%1$sthree%1$send', PHP_EOL)],
-            $normalizer->normalize($string, $crawler)
+            $normalizer->normalize($strings, $crawler)
         );
     }
 }

@@ -20,12 +20,11 @@ class NullConverterTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_returns_the_same_value_it_is_given_as_an_array()
+    function it_returns_the_same_value_it_is_given()
     {
         $converter = new NullConverter;
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(['value'], $converter->convert(['value'], $crawler));
-        $this->assertEquals(['value'], $converter->convert('value', $crawler));
     }
 }

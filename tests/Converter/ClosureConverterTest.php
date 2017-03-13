@@ -25,13 +25,13 @@ class ClosureConverterTest extends PHPUnit\Framework\TestCase
         $converter = new ClosureConverter(function ($values) {
             return array_map(function ($value) {
                 return 'Converted ' . $value;
-            }, (array) $values);
+            }, $values);
         });
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             ['Converted Value'],
-            $converter->convert('Value', $crawler)
+            $converter->convert(['Value'], $crawler)
         );
     }
 }

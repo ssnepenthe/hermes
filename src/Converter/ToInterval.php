@@ -7,26 +7,24 @@ use Exception;
 use DateInterval;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ToInterval implements ConverterInterface
+class ToInterval extends BaseConverter
 {
-    public function convert($value, Crawler $crawler) : array
+    protected function doConvert(string $value, Crawler $crawler)
     {
-        return array_map(function ($val) {
-            try {
-                // First try ISO8601.
-                $interval = new DateInterval($val);
-            } catch (Exception $e) {
-                // Fall back to relative time string.
-                $interval = DateInterval::createFromDateString($val);
-            }
+        try {
+            // First try ISO8601.
+            $interval = new DateInterval($value);
+        } catch (Exception $e) {
+            // Fall back to relative time string.
+            $interval = DateInterval::createFromDateString($value);
+        }
 
-            // If $val is not a valid interval string we will have an empty interval.
-            if ($this->isEmptyInterval($interval)) {
-                return $val;
-            }
+        // If $value is not a valid interval string we will have an empty interval.
+        if ($this->isEmptyInterval($interval)) {
+            return $value;
+        }
 
-            return $this->recalculateCarryOver($interval);
-        }, (array) $value);
+        return $this->recalculateCarryOver($interval);
     }
 
     protected function isEmptyInterval(DateInterval $interval) : bool

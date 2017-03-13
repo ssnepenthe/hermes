@@ -25,14 +25,14 @@ class NormalizerStack implements NormalizerInterface
         return $this->stack;
     }
 
-    public function normalize($value, Crawler $crawler) : array
+    public function normalize(array $values, Crawler $crawler) : array
     {
-        $newValue = $value;
+        $newValues = $values;
 
         foreach ($this->stack as $normalizer) {
-            $newValue = $normalizer->normalize($newValue, $crawler);
+            $newValues = $normalizer->normalize($newValues, $crawler);
         }
 
-        return $newValue;
+        return $newValues;
     }
 }

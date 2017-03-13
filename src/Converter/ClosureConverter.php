@@ -14,8 +14,8 @@ class ClosureConverter implements ConverterInterface
         $this->closure = $closure;
     }
 
-    public function convert($value, Crawler $crawler) : array
+    public function convert(array $values, Crawler $crawler) : array
     {
-        return (array) call_user_func($this->closure, $value, $crawler);
+        return (array) call_user_func($this->closure, $values, $crawler);
     }
 }

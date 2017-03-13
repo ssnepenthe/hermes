@@ -3,18 +3,15 @@
 namespace SSNepenthe\Hermes\Extractor;
 
 use Symfony\Component\DomCrawler\Crawler;
-use function SSNepenthe\Hermes\result_return_value;
 
 class All extends BaseExtractor
 {
-    public function extract(Crawler $crawler)
+    protected function doExtract(Crawler $crawler) : array
     {
-        $result = $crawler->each(function (Crawler $subCrawler, int $index) {
+        return $crawler->each(function (Crawler $subCrawler, int $index) {
             $subResult = $subCrawler->extract($this->attr);
 
-            return result_return_value($subResult);
+            return $this->getFirstValue($subResult);
         });
-
-        return result_return_value($result);
     }
 }

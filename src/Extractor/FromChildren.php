@@ -4,15 +4,15 @@ namespace SSNepenthe\Hermes\Extractor;
 
 abstract class FromChildren extends BaseExtractor
 {
-    protected function extractValueFromChildNodes(\DOMElement $element)
+    protected function extractValueFromChildNodes(\DOMElement $element) : string
     {
         $values = [];
 
         foreach ($element->childNodes as $child) {
+            // We only want DOMElement and DOMText.
             if (! in_array($child->nodeType, [1, 3], true)) {
                 continue;
             }
-
 
             if ('_text' === $this->attr) {
                 $valueProp = 1 === $child->nodeType ? 'nodeValue' : 'wholeText';

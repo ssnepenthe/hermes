@@ -24,12 +24,12 @@ class HorizontalSpaceTest extends PHPUnit\Framework\TestCase
     {
         $normalizer = new HorizontalSpace;
         // Only testing the basics, trust PCRE "\h" implementation for the rest.
-        $string = "space tab\tend";
+        $strings = ["space tab\tend"];
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(
             ['space tab end'],
-            $normalizer->normalize($string, $crawler)
+            $normalizer->normalize($strings, $crawler)
         );
     }
 }

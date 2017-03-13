@@ -20,12 +20,11 @@ class NullNormalizerTest extends PHPUnit\Framework\TestCase
     }
 
     /** @test */
-    function it_returns_the_same_value_it_is_given_as_an_array()
+    function it_returns_the_same_value_it_is_given()
     {
         $normalizer = new NullNormalizer;
         $crawler = Mockery::mock(Crawler::class);
 
         $this->assertEquals(['value'], $normalizer->normalize(['value'], $crawler));
-        $this->assertEquals(['value'], $normalizer->normalize('value', $crawler));
     }
 }

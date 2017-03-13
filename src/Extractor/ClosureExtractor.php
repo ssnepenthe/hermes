@@ -4,7 +4,6 @@ namespace SSNepenthe\Hermes\Extractor;
 
 use Closure;
 use Symfony\Component\DomCrawler\Crawler;
-use function SSNepenthe\Hermes\result_return_value;
 
 class ClosureExtractor implements ExtractorInterface
 {
@@ -15,8 +14,11 @@ class ClosureExtractor implements ExtractorInterface
         $this->closure = $closure;
     }
 
-    public function extract(Crawler $crawler)
+    public function extract(Crawler $crawler) : array
     {
-        return result_return_value(call_user_func($this->closure, $crawler));
+        $values = (array) call_user_func($this->closure, $crawler);
+
+        // Should we trim and filter or allow user to handle manually?
+        return array_filter(array_map('trim', $values));
     }
 }

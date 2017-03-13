@@ -9,7 +9,6 @@ return [
                 [
                     'name' => 'title',
                     'selector' => '.result__title',
-                    'normalizers' => 'whitespace',
                 ],
                 [
                     'extractor' => 'first:href',

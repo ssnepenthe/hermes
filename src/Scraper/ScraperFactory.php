@@ -62,6 +62,7 @@ class ScraperFactory
         } else {
             $leaf = new Leaf(
                 $name,
+                $child['type'],
                 $child['matcher'],
                 $child['extractor'],
                 $child['normalizers'],

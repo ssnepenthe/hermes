@@ -206,6 +206,10 @@ class ScraperConfiguration implements ConfigurationInterface
                 ->scalarNode('selector')
                     ->defaultValue('')
                 ->end()
+                ->enumNode('type')
+                    ->defaultValue('singular')
+                    ->values(['plural', 'singular'])
+                ->end()
             ->end();
     }
 

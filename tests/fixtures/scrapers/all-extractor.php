@@ -7,6 +7,7 @@ return [
             'name' => 'results',
             'normalizers' => 'whitespace',
             'selector' => '.web-result',
+            'type' => 'plural',
         ],
     ],
 ];

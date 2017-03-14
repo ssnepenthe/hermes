@@ -34,6 +34,20 @@ class ScrapersTest extends ScraperTestCase
     }
 
     /** @test */
+    function it_can_differentiate_between_singular_and_plural_data_points()
+    {
+        $scraper = ScraperFactory::fromConfigFile(
+            $this->getScraperFixturePath('one-deep-plural.php')
+        );
+        $expectedResult = Yaml::parse(
+            file_get_contents($this->getResultsFixturePath('one-deep-plural.yml'))
+        );
+        $crawler = $this->makeCrawlerFor('https://duckduckgo.com/html?q=firefox');
+
+        $this->assertEquals($expectedResult, $scraper->scrape($crawler));
+    }
+
+    /** @test */
     function it_can_perform_a_multi_level_scrape()
     {
         $scraper = ScraperFactory::fromConfigFile(

@@ -22,7 +22,14 @@ class LeafTest extends PHPUnit\Framework\TestCase
         $extractor = Mockery::mock(ExtractorInterface::class);
         $normalizer = Mockery::mock(NormalizerInterface::class);
         $converter = Mockery::mock(ConverterInterface::class);
-        $scraper = new Leaf('name', $matcher, $extractor, $normalizer, $converter);
+        $scraper = new Leaf(
+            'name',
+            'type',
+            $matcher,
+            $extractor,
+            $normalizer,
+            $converter
+        );
 
         $this->assertInstanceOf(ScraperInterface::class, $scraper);
     }
@@ -39,7 +46,14 @@ class LeafTest extends PHPUnit\Framework\TestCase
         $normalizer = Mockery::mock(NormalizerInterface::class);
         $converter = Mockery::mock(ConverterInterface::class);
         $crawler = Mockery::mock(Crawler::class);
-        $scraper = new Leaf('name', $matcher, $extractor, $normalizer, $converter);
+        $scraper = new Leaf(
+            'name',
+            'type',
+            $matcher,
+            $extractor,
+            $normalizer,
+            $converter
+        );
 
         $this->assertTrue($scraper->matches($crawler));
         $this->assertFalse($scraper->matches($crawler));

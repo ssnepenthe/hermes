@@ -11,4 +11,3 @@ class ConsecutiveHorizontalSpace extends BaseNormalizer
         return preg_replace('/\h{2,}/u', ' ', $value);
     }
 }
-

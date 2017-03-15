@@ -13,5 +13,5 @@ abstract class BaseConverter implements ConverterInterface
         }, $values);
     }
 
-    protected abstract function doConvert(string $value, Crawler $crawler);
+    abstract protected function doConvert(string $value, Crawler $crawler);
 }

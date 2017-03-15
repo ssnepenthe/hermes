@@ -23,8 +23,10 @@ class ScraperConfiguration implements ConfigurationInterface
         'extractor' => [
             'all' => \SSNepenthe\Hermes\Extractor\All::class,
             'all-from-children' => \SSNepenthe\Hermes\Extractor\AllFromChildren::class,
+            'all-split' => \SSNepenthe\Hermes\Extractor\AllSplit::class,
             'first' => \SSNepenthe\Hermes\Extractor\First::class,
             'first-from-children' => \SSNepenthe\Hermes\Extractor\FirstFromChildren::class,
+            'first-split' => \SSNepenthe\Hermes\Extractor\FirstSplit::class,
         ],
         'matcher' => [
             'document' => \SSNepenthe\Hermes\Matcher\DocumentMatcher::class,

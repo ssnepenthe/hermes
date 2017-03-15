@@ -38,6 +38,38 @@ class ExtractorsTest extends ScraperTestCase
     }
 
     /** @test */
+    function it_can_extract_and_split_values_from_all_nodes()
+    {
+        $scraper = ScraperFactory::fromConfigFile(
+            $this->getScraperFixturePath('all-split.php')
+        );
+        $expectedResult = Yaml::parse(
+            file_get_contents(
+                $this->getResultsFixturePath('all-split.yml')
+            )
+        );
+        $crawler = $this->makeCrawlerFor('https://duckduckgo.com/html?q=firefox');
+
+        $this->assertEquals($expectedResult, $scraper->scrape($crawler));
+    }
+
+    /** @test */
+    function it_can_extract_and_split_values_from_first_node()
+    {
+        $scraper = ScraperFactory::fromConfigFile(
+            $this->getScraperFixturePath('first-split.php')
+        );
+        $expectedResult = Yaml::parse(
+            file_get_contents(
+                $this->getResultsFixturePath('first-split.yml')
+            )
+        );
+        $crawler = $this->makeCrawlerFor('https://duckduckgo.com/html?q=firefox');
+
+        $this->assertEquals($expectedResult, $scraper->scrape($crawler));
+    }
+
+    /** @test */
     function it_can_extract_value_from_first_node()
     {
         $scraper = ScraperFactory::fromConfigFile(

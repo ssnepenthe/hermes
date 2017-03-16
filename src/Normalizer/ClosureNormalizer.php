@@ -16,8 +16,6 @@ class ClosureNormalizer implements NormalizerInterface
 
     public function normalize(array $values, Crawler $crawler) : array
     {
-        $values = (array) call_user_func($this->closure, $values, $crawler);
-
-        return array_filter(array_map('trim', $values));
+        return (array) call_user_func($this->closure, $values, $crawler);
     }
 }

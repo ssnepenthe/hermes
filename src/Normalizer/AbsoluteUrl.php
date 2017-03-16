@@ -15,7 +15,7 @@ class AbsoluteUrl implements NormalizerInterface
     {
         $url = parse_url($crawler->getUri());
 
-        $values = array_map(function ($value) use ($url) {
+        return array_map(function ($value) use ($url) {
             $parsed = parse_url($value);
 
             // We probably shouldn't be here ($value is not URL).
@@ -32,9 +32,7 @@ class AbsoluteUrl implements NormalizerInterface
                 $value = $url['scheme'] . '://' . ltrim($value, ':/');
             }
 
-            return trim($value);
+            return $value;
         }, $values);
-
-        return array_filter($values);
     }
 }

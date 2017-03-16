@@ -15,11 +15,7 @@ abstract class BaseExtractor implements ExtractorInterface
 
     public function extract(Crawler $crawler) : array
     {
-        // Filtering like this drops the string "0"... Might be a problem eventually.
-        return array_values(array_filter(array_map(
-            'trim',
-            $this->doExtract($crawler)
-        )));
+        return $this->doExtract($crawler);
     }
 
     protected function getFirstValue(array $values, $default = '')

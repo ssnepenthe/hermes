@@ -9,9 +9,7 @@ class All extends BaseExtractor
     protected function doExtract(Crawler $crawler) : array
     {
         return $crawler->each(function (Crawler $subCrawler, int $index) {
-            $subResult = $subCrawler->extract($this->attr);
-
-            return $this->getFirstValue($subResult);
+            return $this->getFirstValue($subCrawler->extract($this->attr));
         });
     }
 }

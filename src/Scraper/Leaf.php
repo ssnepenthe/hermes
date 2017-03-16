@@ -58,6 +58,21 @@ class Leaf implements ScraperInterface
         }
 
         $result = $this->extractor->extract($crawler);
+
+        // Normalize and trim whitespace.
+        $result = array_map(function ($value) {
+            $value = preg_replace(
+                ['/\h/u', '/(\r\n|\v)/u'],
+                [' ', PHP_EOL],
+                $value
+            );
+
+            return trim($value);
+        }, $result);
+
+        // Remove empty entries and re-index.
+        $result = array_values(array_filter($result));
+
         $result = $this->normalizer->normalize($result, $crawler);
         $result = $this->converter->convert($result, $crawler);
 

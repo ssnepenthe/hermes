@@ -23,8 +23,6 @@ abstract class FromChildren extends BaseExtractor
             }
         }
 
-        $values = array_filter(array_map('trim', $values));
-
-        return implode(' ', $values);
+        return implode(' ', array_map('trim', $values));
     }
 }

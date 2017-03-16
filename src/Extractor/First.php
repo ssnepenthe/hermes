@@ -8,8 +8,6 @@ class First extends BaseExtractor
 {
     protected function doExtract(Crawler $crawler) : array
     {
-        $values = $crawler->first()->extract($this->attr);
-
-        return [$this->getFirstValue($values)];
+        return [$this->getFirstValue($crawler->first()->extract($this->attr))];
     }
 }

@@ -16,9 +16,6 @@ class ClosureExtractor implements ExtractorInterface
 
     public function extract(Crawler $crawler) : array
     {
-        $values = (array) call_user_func($this->closure, $crawler);
-
-        // Should we trim and filter or allow user to handle manually?
-        return array_filter(array_map('trim', $values));
+        return (array) call_user_func($this->closure, $crawler);
     }
 }

@@ -33,8 +33,6 @@ class Fraction extends BaseNormalizer
         );
 
         // Then replace the fraction.
-        $value = str_replace($this->fractions, $this->numbers, $value);
-
-        return $value;
+        return str_replace($this->fractions, $this->numbers, $value);
     }
 }

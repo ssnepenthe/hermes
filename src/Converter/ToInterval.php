@@ -11,15 +11,19 @@ class ToInterval extends BaseConverter
 {
     protected function doConvert(string $value, Crawler $crawler)
     {
+        // Very likely need to revisit this eventually.
+        // DateInterval::createFromDateString() doesn't recognize "hr" abbreviation.
+        $newValue = str_replace('hr', 'hour', $value);
+
         try {
             // First try ISO8601.
-            $interval = new DateInterval($value);
+            $interval = new DateInterval($newValue);
         } catch (Exception $e) {
             // Fall back to relative time string.
-            $interval = DateInterval::createFromDateString($value);
+            $interval = DateInterval::createFromDateString($newValue);
         }
 
-        // If $value is not a valid interval string we will have an empty interval.
+        // If we end up with an empty interval, return original value.
         if ($this->isEmptyInterval($interval)) {
             return $value;
         }

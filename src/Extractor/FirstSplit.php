@@ -12,8 +12,6 @@ class FirstSplit extends BaseExtractor
 
         $values = explode(PHP_EOL, $values);
 
-        $values = array_filter(array_map('trim', $values));
-
-        return array_values($values);
+        return array_map('trim', $values);
     }
 }

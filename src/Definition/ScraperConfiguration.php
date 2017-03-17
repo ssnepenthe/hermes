@@ -43,6 +43,7 @@ class ScraperConfiguration implements ConfigurationInterface
             'consecutive-horizontal-space' => \SSNepenthe\Hermes\Normalizer\ConsecutiveHorizontalSpace::class,
             'consecutive-vertical-space' => \SSNepenthe\Hermes\Normalizer\ConsecutiveVerticalSpace::class,
             'null' => \SSNepenthe\Hermes\Normalizer\NullNormalizer::class,
+            'single-line' => \SSNepenthe\Hermes\Normalizer\SingleLine::class,
             'whitespace' => \SSNepenthe\Hermes\Normalizer\Whitespace::class,
             'vertical-space' => \SSNepenthe\Hermes\Normalizer\VerticalSpace::class,
         ],

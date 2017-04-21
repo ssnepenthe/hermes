@@ -2,12 +2,17 @@
 
 namespace SSNepenthe\Hermes\Command;
 
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use SSNepenthe\Hermes\Loader\PhpFileLoader;
+use SSNepenthe\Hermes\Loader\JsonFileLoader;
+use SSNepenthe\Hermes\Loader\YamlFileLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Console\Output\OutputInterface;
 use SSNepenthe\Hermes\Definition\ScraperConfiguration;
 
@@ -31,33 +36,33 @@ class DebugConfigCommand extends Command
     {
         if (! $file = realpath($input->getArgument('file'))) {
             // @todo
-            throw new \RuntimeException;
+            throw new RuntimeException;
         }
 
         dump($this->processConfigFile($file));
     }
 
-    protected function makeLoader(string $file)
+    protected function makeLoader()
     {
-        if (! $extension = pathinfo($file, PATHINFO_EXTENSION)) {
-            // @todo
-            throw new \RuntimeException;
-        }
+        $locator = new FileLocator;
 
-        if ('php' !== $extension) {
-            throw new \RuntimeException;
-        }
-
-        return new PhpFileLoader(new FileLocator);
+        return new DelegatingLoader(
+            new LoaderResolver([
+                new PhpFileLoader($locator),
+                new YamlFileLoader($locator),
+                new JsonFileLoader($locator),
+            ])
+        );
     }
 
     protected function processConfigFile(string $file)
     {
-        $configs = $this->makeLoader($file)->load($file);
-
         $processor = new Processor;
         $configuration = new ScraperConfiguration;
 
-        return $processor->processConfiguration($configuration, $configs);
+        return $processor->processConfiguration(
+            $configuration,
+            $this->makeLoader()->load($file)
+        );
     }
 }
